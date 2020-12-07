@@ -1,9 +1,9 @@
-package com.davidholas.assignment.model;
+package com.davidholas.assignment.model.Customer;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.davidholas.assignment.model.Account.Account;
+
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Customer {
@@ -13,6 +13,9 @@ public class Customer {
     private Long id;
 
     private String name;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Account> accounts;
 
     public Customer() {
     }

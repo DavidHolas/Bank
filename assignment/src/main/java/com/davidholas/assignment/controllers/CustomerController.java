@@ -1,8 +1,10 @@
 package com.davidholas.assignment.controllers;
 
-import com.davidholas.assignment.model.Customer;
-import com.davidholas.assignment.model.CustomerResource;
+import com.davidholas.assignment.model.Customer.Customer;
+import com.davidholas.assignment.model.Customer.CustomerResource;
 import com.davidholas.assignment.services.CustomerService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,22 +20,22 @@ public class CustomerController {
     }
 
     @GetMapping("/all")
-    public List<Customer> getCustomerById() {
+    public ResponseEntity<List<Customer>> getCustomerById() {
 
         List<Customer> customers = customerService.getAllCustomers();
 
-        return customers;
+        return new ResponseEntity<>(customers, HttpStatus.OK);
     }
 
     @GetMapping("/customer/{customerId}")
-    public Customer getCustomerById(@PathVariable Long customerId) {
+    public ResponseEntity<Customer> getCustomerById(@PathVariable Long customerId) {
 
         Customer customer = customerService.getCustomerById(customerId);
 
-        return customer;
+        return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
-    @PostMapping("/addCustomer}")
+    @PostMapping("/addCustomer")
     public void addCustomer(@RequestBody CustomerResource customerResource) {
 
         customerService.addCustomer(customerResource);

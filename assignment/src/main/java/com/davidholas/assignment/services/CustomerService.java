@@ -1,14 +1,16 @@
 package com.davidholas.assignment.services;
 
-import com.davidholas.assignment.model.Customer;
-import com.davidholas.assignment.model.CustomerResource;
+import com.davidholas.assignment.model.Customer.Customer;
+import com.davidholas.assignment.model.Customer.CustomerResource;
 import com.davidholas.assignment.repositories.CustomerRepository;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class CustomerService {
 
     private CustomerRepository customerRepository;

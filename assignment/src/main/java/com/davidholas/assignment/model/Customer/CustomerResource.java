@@ -1,4 +1,4 @@
-package com.davidholas.assignment.model;
+package com.davidholas.assignment.model.Customer;
 
 public class CustomerResource {
 

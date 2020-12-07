@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    password: 'pass'
+    url: 'jdbc:mysql://localhost:3306/bank?serverTimezone=UTC'
+    username: 'root'
+  jpa:
+    show-sql: true
