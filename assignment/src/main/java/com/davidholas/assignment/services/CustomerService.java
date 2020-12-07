@@ -28,9 +28,15 @@ public class CustomerService {
 
     public Customer getCustomerById(Long customerId) {
 
-        Optional<Customer> customer = customerRepository.findById(customerId);
+        Optional<Customer> customerOpt = customerRepository.findById(customerId);
 
-        return customer.get();
+        if(!customerOpt.isPresent()) {
+            throw new RuntimeException("Account with id: " + customerId + " was not found.");
+        }
+
+        Customer customer = customerOpt.get();
+
+        return customer;
     }
 
     public void addCustomer(CustomerResource customerResource) {

@@ -31,9 +31,15 @@ public class AccountService {
 
     public Account getAccountById(Long accountId) {
 
-        Optional<Account> account = accountRepository.findById(accountId);
+        Optional<Account> accountOpt = accountRepository.findById(accountId);
 
-        return account.get();
+        if(!accountOpt.isPresent()) {
+            throw new RuntimeException("Account with id: " + accountId + " was not found.");
+        }
+
+        Account account = accountOpt.get();
+
+        return account;
     }
 
     public List<Account> getAllAccounts() {
