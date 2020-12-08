@@ -1,6 +1,9 @@
 package com.davidholas.assignment.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transfer_history")
@@ -18,6 +21,9 @@ public class TransferHistory {
 
     private double amount;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    private LocalDateTime time;
+
     public TransferHistory() {
     }
 
@@ -25,6 +31,7 @@ public class TransferHistory {
         this.withdrawalAccountId = withdrawalAccountId;
         this.depositAccountId = depositAccountId;
         this.amount = amount;
+        this.time = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -57,5 +64,13 @@ public class TransferHistory {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalDateTime time) {
+        this.time = time;
     }
 }

@@ -25,8 +25,6 @@ public class TransferHistoryController {
     @RequestMapping("/{accountId}")
     public ResponseEntity<List<TransferHistory>> getTransferHistory(@PathVariable Long accountId) {
 
-        System.out.println("ID: " + accountId);
-
         List<TransferHistory> transferHistoryList = transferHistoryService.getTransferHistoryForAccount(accountId);
 
         return new ResponseEntity<>(transferHistoryList, HttpStatus.OK);
