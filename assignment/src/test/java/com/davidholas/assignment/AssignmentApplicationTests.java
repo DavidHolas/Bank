@@ -1,11 +1,8 @@
 package com.davidholas.assignment;
 
 import com.davidholas.assignment.exceptions.BusinessException;
-import com.davidholas.assignment.exceptions.ResourceNotFoundException;
 import com.davidholas.assignment.model.Account.Account;
-import com.davidholas.assignment.model.Customer.Customer;
 import com.davidholas.assignment.model.TransferDetails;
-import com.davidholas.assignment.model.TransferHistory;
 import com.davidholas.assignment.repositories.AccountRepository;
 import com.davidholas.assignment.repositories.CustomerRepository;
 import com.davidholas.assignment.repositories.TransferHistoryRepository;
