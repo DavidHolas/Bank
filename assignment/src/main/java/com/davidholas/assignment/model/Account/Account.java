@@ -26,6 +26,11 @@ public class Account {
         this.customer = customer;
     }
 
+    public Account(Long id, Customer customer) {
+        this.id = id;
+        this.customer = customer;
+    }
+
     public Account(double balance) {
         this.balance = balance;
     }

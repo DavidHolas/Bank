@@ -1,8 +1,10 @@
 package com.davidholas.assignment.services;
 
+import com.davidholas.assignment.exceptions.ResourceNotFoundException;
 import com.davidholas.assignment.model.Customer.Customer;
 import com.davidholas.assignment.model.Customer.CustomerResource;
 import com.davidholas.assignment.repositories.CustomerRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -31,7 +33,7 @@ public class CustomerService {
         Optional<Customer> customerOpt = customerRepository.findById(customerId);
 
         if(!customerOpt.isPresent()) {
-            throw new RuntimeException("Account with id: " + customerId + " was not found.");
+            throw new ResourceNotFoundException("Account with id: " + customerId + " was not found.");
         }
 
         Customer customer = customerOpt.get();

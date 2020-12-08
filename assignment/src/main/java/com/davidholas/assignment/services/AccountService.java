@@ -1,5 +1,7 @@
 package com.davidholas.assignment.services;
 
+import com.davidholas.assignment.exceptions.BusinessException;
+import com.davidholas.assignment.exceptions.ResourceNotFoundException;
 import com.davidholas.assignment.model.Account.Account;
 import com.davidholas.assignment.model.Customer.Customer;
 import com.davidholas.assignment.model.TransferDetails;
@@ -34,7 +36,7 @@ public class AccountService {
         Optional<Account> accountOpt = accountRepository.findById(accountId);
 
         if(!accountOpt.isPresent()) {
-            throw new RuntimeException("Account with id: " + accountId + " was not found.");
+            throw new ResourceNotFoundException("Account with id: " + accountId + " was not found.");
         }
 
         Account account = accountOpt.get();
@@ -54,7 +56,7 @@ public class AccountService {
         Optional<Customer> customerOpt = customerRepository.findById(customerId);
 
         if(!customerOpt.isPresent()) {
-            throw new RuntimeException("Customer with id: " + customerId + " was not found.");
+            throw new ResourceNotFoundException("Customer with id: " + customerId + " was not found.");
         }
 
         Customer customer = customerOpt.get();
@@ -73,19 +75,11 @@ public class AccountService {
         Optional<Account> withdrawalAccountOpt = accountRepository.findById(withdrawalAccId);
         Optional<Account> depositAccountOpt = accountRepository.findById(depositAccId);
 
-        if(!withdrawalAccountOpt.isPresent()) {
-            throw new RuntimeException("Account with id: " + withdrawalAccId + " was not found.");
-        }
-
-        if(!depositAccountOpt.isPresent()) {
-            throw new RuntimeException("Account with id: " + depositAccId + " was not found.");
-        }
-
-        Account withdrawalAccount = withdrawalAccountOpt.orElseThrow(() -> new RuntimeException("Account with id: " + withdrawalAccId + " was not found."));
-        Account depositAccount = depositAccountOpt.orElseThrow(() -> new RuntimeException("Account with id: " + depositAccId + " was not found."));
+        Account withdrawalAccount = withdrawalAccountOpt.orElseThrow(() -> new ResourceNotFoundException("Account with id: " + withdrawalAccId + " was not found."));
+        Account depositAccount = depositAccountOpt.orElseThrow(() -> new ResourceNotFoundException("Account with id: " + depositAccId + " was not found."));
 
         if((withdrawalAccount.getBalance() - amount) < 0) {
-            throw new RuntimeException("There is not enough money on an account with id: " + withdrawalAccId);
+            throw new BusinessException("There is not enough money on an account with id: " + withdrawalAccId);
         }
 
         withdrawalAccount.setBalance(withdrawalAccount.getBalance() - amount);
