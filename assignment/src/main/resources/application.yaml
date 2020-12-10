@@ -12,9 +12,9 @@ spring:
       username: 'root'
   jpa:
     show-sql: true
-    hibernate.ddl-auto: create-drop
+    hibernate.ddl-auto: update
 server:
-  port: 9093
+  port: 8080
 name: devel-YAML
 
 ---
@@ -27,7 +27,7 @@ spring:
       username: 'root'
   jpa:
     show-sql: true
-    hibernate.ddl-auto: create-drop
+    hibernate.ddl-auto: update
 server:
   port: 9092
 name: prod-YAML

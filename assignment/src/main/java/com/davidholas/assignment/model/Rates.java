@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Rates {
 
+    @JsonProperty("EUR")
+    private double eur;
+
     @JsonProperty("GBP")
     private double gbp;
 
@@ -16,10 +19,19 @@ public class Rates {
     public Rates() {
     }
 
-    public Rates(double gbp, double usd, double chf) {
+    public Rates(double eur, double gbp, double usd, double chf) {
+        this.eur = eur;
         this.gbp = gbp;
         this.usd = usd;
         this.chf = chf;
+    }
+
+    public double getEur() {
+        return eur;
+    }
+
+    public void setEur(double eur) {
+        this.eur = eur;
     }
 
     public double getGbp() {

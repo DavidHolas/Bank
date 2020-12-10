@@ -4,6 +4,7 @@ import com.davidholas.assignment.exceptions.BusinessException;
 import com.davidholas.assignment.exceptions.InvalidInputException;
 import com.davidholas.assignment.exceptions.ResourceNotFoundException;
 import com.davidholas.assignment.model.Account.Account;
+import com.davidholas.assignment.model.Account.AccountResource;
 import com.davidholas.assignment.model.Customer.Customer;
 import com.davidholas.assignment.model.ExchangeRatesResource;
 import com.davidholas.assignment.model.Rates;
@@ -58,7 +59,10 @@ public class AccountService {
         return accounts;
     }
 
-    public void addAccount(int accountNumber, Long customerId) {
+    public void addAccount(AccountResource accountResource) {
+
+        Long customerId = accountResource.getCustomer().getId();
+        int accountNumber = accountResource.getAccountNumber();
 
         Optional<Customer> customerOpt = customerRepository.findById(customerId);
 
@@ -74,7 +78,7 @@ public class AccountService {
 
         Customer customer = customerOpt.get();
 
-        Account account = new Account(accountNumber, customer);
+        Account account = new Account(accountNumber, accountResource.getCurrency(), customer);
 
         accountRepository.save(account);
     }
@@ -95,10 +99,38 @@ public class AccountService {
             throw new BusinessException("There is not enough money on an account with id: " + withdrawalAccId);
         }
 
-        withdrawalAccount.setBalance(withdrawalAccount.getBalance() - amount);
-        depositAccount.setBalance(depositAccount.getBalance() + amount);
+        String withdrawalCurrency = withdrawalAccount.getCurrency().toString();
+        String depositCurrency = depositAccount.getCurrency().toString();
 
-        TransferHistory transferHistory = new TransferHistory(withdrawalAccId, depositAccId, amount);
+        if(withdrawalCurrency.equals(depositCurrency)) {
+
+            commitTransaction(withdrawalAccount, depositAccount, amount, 1);
+
+        } else {
+
+            String uri = "https://api.exchangeratesapi.io/latest?base=" + withdrawalCurrency;
+            RestTemplate restTemplate = new RestTemplate();
+            ExchangeRatesResource exchangeRates = restTemplate.getForObject(uri, ExchangeRatesResource.class);
+            Rates rates = exchangeRates.getRates();
+            double rate;
+
+            try {
+                Method getter = Rates.class.getDeclaredMethod("get" + validateCurrency(depositCurrency), null);
+                rate = (double) getter.invoke(rates, null);
+            } catch (Exception ex) {
+                throw new InvalidInputException("Can't resolve currency.");
+            }
+
+            commitTransaction(withdrawalAccount, depositAccount, amount, rate);
+        }
+    }
+
+    public void commitTransaction(Account withdrawalAccount, Account depositAccount, double amount, double rate) {
+
+        withdrawalAccount.setBalance(withdrawalAccount.getBalance() - amount);
+        depositAccount.setBalance(depositAccount.getBalance() + amount * rate);
+
+        TransferHistory transferHistory = new TransferHistory(withdrawalAccount.getId(), depositAccount.getId(), amount, rate);
 
         accountRepository.save(withdrawalAccount);
         accountRepository.save(depositAccount);
@@ -128,6 +160,13 @@ public class AccountService {
 
         double result = balance * rate;
 
+        return result;
+    }
+
+    public String validateCurrency(String currency) {
+
+        String validatedCurrency = currency.toLowerCase();
+        String result = validatedCurrency.substring(0,1).toUpperCase() + validatedCurrency.substring(1);
         return result;
     }
 

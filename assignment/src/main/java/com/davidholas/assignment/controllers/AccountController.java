@@ -1,6 +1,7 @@
 package com.davidholas.assignment.controllers;
 
 import com.davidholas.assignment.model.Account.Account;
+import com.davidholas.assignment.model.Account.AccountResource;
 import com.davidholas.assignment.model.TransferDetails;
 import com.davidholas.assignment.services.AccountService;
 import org.springframework.http.HttpStatus;
@@ -35,10 +36,10 @@ public class AccountController {
         return new ResponseEntity<>(accounts, HttpStatus.OK);
     }
 
-    @PostMapping("/addAccount/{accountNumber}/{customerId}")
-    public void addAccount(@PathVariable int accountNumber,@PathVariable Long customerId) {
+    @PostMapping("/addAccount")
+    public void addAccount(@RequestBody AccountResource accountResource) {
 
-        accountService.addAccount(accountNumber, customerId);
+        accountService.addAccount(accountResource);
     }
 
     @GetMapping("/balance/{accountId}")

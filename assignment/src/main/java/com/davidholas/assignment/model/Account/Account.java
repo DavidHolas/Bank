@@ -1,5 +1,6 @@
 package com.davidholas.assignment.model.Account;
 
+import com.davidholas.assignment.model.Currency;
 import com.davidholas.assignment.model.Customer.Customer;
 import com.davidholas.assignment.model.TransferHistory;
 import org.springframework.lang.NonNull;
@@ -19,6 +20,8 @@ public class Account {
 
     private double balance = 5000;
 
+    private Currency currency = Currency.EUR;
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
@@ -28,6 +31,12 @@ public class Account {
 
     public Account(int accountNumber, Customer customer) {
         this.accountNumber = accountNumber;
+        this.customer = customer;
+    }
+
+    public Account(int accountNumber, Currency currency, Customer customer) {
+        this.accountNumber = accountNumber;
+        this.currency = currency;
         this.customer = customer;
     }
 
@@ -64,6 +73,14 @@ public class Account {
 
     public void setBalance(double balance) {
         this.balance = balance;
+    }
+
+    public Currency getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
     }
 
     public Customer getCustomer() {

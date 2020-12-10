@@ -21,16 +21,19 @@ public class TransferHistory {
 
     private double amount;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    private double rate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy kk:mm:ss")
     private LocalDateTime time;
 
     public TransferHistory() {
     }
 
-    public TransferHistory(Long withdrawalAccountId, Long depositAccountId, double amount) {
+    public TransferHistory(Long withdrawalAccountId, Long depositAccountId, double amount, double rate) {
         this.withdrawalAccountId = withdrawalAccountId;
         this.depositAccountId = depositAccountId;
         this.amount = amount;
+        this.rate = rate;
         this.time = LocalDateTime.now();
     }
 
@@ -64,6 +67,14 @@ public class TransferHistory {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public double getRate() {
+        return rate;
+    }
+
+    public void setRate(double rate) {
+        this.rate = rate;
     }
 
     public LocalDateTime getTime() {
