@@ -12,6 +12,7 @@ import com.davidholas.assignment.model.TransferHistory;
 import com.davidholas.assignment.repositories.AccountRepository;
 import com.davidholas.assignment.repositories.CustomerRepository;
 import com.davidholas.assignment.repositories.TransferHistoryRepository;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -41,7 +42,7 @@ public class AccountService {
 
         Optional<Account> accountOpt = accountRepository.findById(accountId);
 
-        if(!accountOpt.isPresent()) {
+        if (!accountOpt.isPresent()) {
             throw new ResourceNotFoundException("Account with id: " + accountId + " was not found.");
         }
 
@@ -61,7 +62,7 @@ public class AccountService {
 
         Optional<Customer> customerOpt = customerRepository.findById(customerId);
 
-        if(!customerOpt.isPresent()) {
+        if (!customerOpt.isPresent()) {
             throw new ResourceNotFoundException("Customer with id: " + customerId + " was not found.");
         }
 
@@ -84,7 +85,7 @@ public class AccountService {
         Account withdrawalAccount = withdrawalAccountOpt.orElseThrow(() -> new ResourceNotFoundException("Account with id: " + withdrawalAccId + " was not found."));
         Account depositAccount = depositAccountOpt.orElseThrow(() -> new ResourceNotFoundException("Account with id: " + depositAccId + " was not found."));
 
-        if((withdrawalAccount.getBalance() - amount) < 0) {
+        if ((withdrawalAccount.getBalance() - amount) < 0) {
             throw new BusinessException("There is not enough money on an account with id: " + withdrawalAccId);
         }
 
@@ -114,13 +115,26 @@ public class AccountService {
         // Call getter method from Rates class for wanted currency
         try {
             Method getter = Rates.class.getDeclaredMethod("get" + validatedCurrency, null);
-            rate = (double) getter.invoke(rates,null);
-        } catch(Exception ex) {
+            rate = (double) getter.invoke(rates, null);
+        } catch (Exception ex) {
             throw new InvalidInputException("Can't resolve currency.");
         }
 
         double result = balance * rate;
 
         return result;
+    }
+
+    // Need to find proper place for the method and test the correctness of cron expression
+    @Scheduled(cron = "0 0 0 1 * ?")
+    public void payFees() {
+
+        List<Account> accounts = this.getAllAccounts();
+
+        for(Account account : accounts) {
+
+            account.setBalance(account.getBalance() - 100);
+            accountRepository.save(account);
+        }
     }
 }
