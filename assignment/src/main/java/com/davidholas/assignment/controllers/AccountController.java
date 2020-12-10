@@ -35,10 +35,10 @@ public class AccountController {
         return new ResponseEntity<>(accounts, HttpStatus.OK);
     }
 
-    @PostMapping("/addAccount/{customerId}")
-    public void addAccount(@PathVariable Long customerId) {
+    @PostMapping("/addAccount/{accountNumber}/{customerId}")
+    public void addAccount(@PathVariable int accountNumber,@PathVariable Long customerId) {
 
-        accountService.addAccount(customerId);
+        accountService.addAccount(accountNumber, customerId);
     }
 
     @GetMapping("/balance/{accountId}")

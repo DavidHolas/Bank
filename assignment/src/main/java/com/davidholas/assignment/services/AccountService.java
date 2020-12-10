@@ -58,7 +58,7 @@ public class AccountService {
         return accounts;
     }
 
-    public void addAccount(Long customerId) {
+    public void addAccount(int accountNumber, Long customerId) {
 
         Optional<Customer> customerOpt = customerRepository.findById(customerId);
 
@@ -66,9 +66,15 @@ public class AccountService {
             throw new ResourceNotFoundException("Customer with id: " + customerId + " was not found.");
         }
 
+        Optional<Account> accountOpt = accountRepository.findAccountByNumber(accountNumber);
+
+        if (accountOpt.isPresent()) {
+            throw new InvalidInputException("Account with number: " + accountNumber + " already exists.");
+        }
+
         Customer customer = customerOpt.get();
 
-        Account account = new Account(customer);
+        Account account = new Account(accountNumber, customer);
 
         accountRepository.save(account);
     }

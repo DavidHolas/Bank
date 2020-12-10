@@ -6,12 +6,15 @@ public class AccountResource {
 
     private Long id;
 
+    private int accountNumber;
+
     private double balance;
 
     private Customer customer;
 
-    public AccountResource(Long id, double balance, Customer customer) {
+    public AccountResource(Long id, int accountNumber, double balance, Customer customer) {
         this.id = id;
+        this.accountNumber = accountNumber;
         this.balance = balance;
         this.customer = customer;
     }
@@ -22,6 +25,14 @@ public class AccountResource {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public int getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(int accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public double getBalance() {
