@@ -14,9 +14,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = BusinessException.class)
-    public ResponseEntity<Object> handleException(BusinessException ex) {
+    @ExceptionHandler(value = InvalidInputException.class)
+    public ResponseEntity<Object> handleInvalidInputException(InvalidInputException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getErrorMessage(), ex.getTimestamp());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = BusinessException.class)
+    public ResponseEntity<Object> handleBussinesException(BusinessException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getErrorMessage(), ex.getTimestamp());
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

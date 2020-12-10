@@ -42,13 +42,13 @@ public class AccountController {
     }
 
     @GetMapping("/balance/{accountId}")
-    public double getBalance(@PathVariable Long accountId) {
+    public ResponseEntity<Double> getBalance(@PathVariable Long accountId) {
 
         Account account = accountService.getAccountById(accountId);
 
         double balance = account.getBalance();
 
-        return balance;
+        return new ResponseEntity<>(balance, HttpStatus.OK);
     }
 
     @PutMapping
@@ -56,5 +56,14 @@ public class AccountController {
     public void transferMoney(@RequestBody TransferDetails transferDetails) {
 
         accountService.transferMoney(transferDetails);
+    }
+
+    @GetMapping
+    @RequestMapping("/foreignBalance/{foreignCurrency}/{accountId}")
+    public ResponseEntity<Double> getBalanceInForeignCurrency(@PathVariable String foreignCurrency, @PathVariable Long accountId) {
+
+        double result = accountService.getBalanceInForeign(foreignCurrency, accountId);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

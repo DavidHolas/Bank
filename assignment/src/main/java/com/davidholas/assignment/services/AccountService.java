@@ -1,17 +1,23 @@
 package com.davidholas.assignment.services;
 
 import com.davidholas.assignment.exceptions.BusinessException;
+import com.davidholas.assignment.exceptions.InvalidInputException;
 import com.davidholas.assignment.exceptions.ResourceNotFoundException;
 import com.davidholas.assignment.model.Account.Account;
 import com.davidholas.assignment.model.Customer.Customer;
+import com.davidholas.assignment.model.ExchangeRatesResource;
+import com.davidholas.assignment.model.Rates;
 import com.davidholas.assignment.model.TransferDetails;
 import com.davidholas.assignment.model.TransferHistory;
 import com.davidholas.assignment.repositories.AccountRepository;
 import com.davidholas.assignment.repositories.CustomerRepository;
 import com.davidholas.assignment.repositories.TransferHistoryRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,5 +97,30 @@ public class AccountService {
         accountRepository.save(depositAccount);
 
         transferHistoryRepository.save(transferHistory);
+    }
+
+    public double getBalanceInForeign(String currency, Long accountId) {
+
+        double rate;
+        Account account = this.getAccountById(accountId);
+        double balance = account.getBalance();
+        String validatedCurrency = StringUtils.capitalize(currency.toLowerCase());
+
+        // Get exchange rates from https://exchangeratesapi.io/
+        RestTemplate restTemplate = new RestTemplate();
+        ExchangeRatesResource exchangeRates = restTemplate.getForObject("https://api.exchangeratesapi.io/latest", ExchangeRatesResource.class);
+        Rates rates = exchangeRates.getRates();
+
+        // Call getter method from Rates class for wanted currency
+        try {
+            Method getter = Rates.class.getDeclaredMethod("get" + validatedCurrency, null);
+            rate = (double) getter.invoke(rates,null);
+        } catch(Exception ex) {
+            throw new InvalidInputException("Can't resolve currency.");
+        }
+
+        double result = balance * rate;
+
+        return result;
     }
 }
