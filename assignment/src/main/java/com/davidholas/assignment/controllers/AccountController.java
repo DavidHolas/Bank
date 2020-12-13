@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -43,11 +44,11 @@ public class AccountController {
     }
 
     @GetMapping("/balance/{accountId}")
-    public ResponseEntity<Double> getBalance(@PathVariable Long accountId) {
+    public ResponseEntity<BigDecimal> getBalance(@PathVariable Long accountId) {
 
         Account account = accountService.getAccountById(accountId);
 
-        double balance = account.getBalance();
+        BigDecimal balance = account.getBalance();
 
         return new ResponseEntity<>(balance, HttpStatus.OK);
     }
@@ -61,9 +62,9 @@ public class AccountController {
 
     @GetMapping
     @RequestMapping("/foreignBalance/{foreignCurrency}/{accountId}")
-    public ResponseEntity<Double> getBalanceInForeignCurrency(@PathVariable String foreignCurrency, @PathVariable Long accountId) {
+    public ResponseEntity<BigDecimal> getBalanceInForeignCurrency(@PathVariable String foreignCurrency, @PathVariable Long accountId) {
 
-        double result = accountService.getBalanceInForeign(foreignCurrency, accountId);
+        BigDecimal result = accountService.getBalanceInForeign(foreignCurrency, accountId);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

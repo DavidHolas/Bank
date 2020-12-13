@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,7 +86,7 @@ public class AccountService {
 
     public void transferMoney(TransferDetails transferDetails) {
 
-        double amount = transferDetails.getAmount();
+        BigDecimal amount = transferDetails.getAmount();
         Long withdrawalAccId = transferDetails.getWithdrawalAccountId();
         Long depositAccId = transferDetails.getDepositAccountId();
 
@@ -95,7 +96,7 @@ public class AccountService {
         Account withdrawalAccount = withdrawalAccountOpt.orElseThrow(() -> new ResourceNotFoundException("Account with id: " + withdrawalAccId + " was not found."));
         Account depositAccount = depositAccountOpt.orElseThrow(() -> new ResourceNotFoundException("Account with id: " + depositAccId + " was not found."));
 
-        if ((withdrawalAccount.getBalance() - amount) < 0) {
+        if ((withdrawalAccount.getBalance().subtract(amount)).compareTo(BigDecimal.ZERO) == -1) {
             throw new BusinessException("There is not enough money on an account with id: " + withdrawalAccId);
         }
 
@@ -104,7 +105,7 @@ public class AccountService {
 
         if(withdrawalCurrency.equals(depositCurrency)) {
 
-            commitTransaction(withdrawalAccount, depositAccount, amount, 1);
+            commitTransaction(withdrawalAccount, depositAccount, amount, BigDecimal.ONE);
 
         } else {
 
@@ -112,11 +113,11 @@ public class AccountService {
             RestTemplate restTemplate = new RestTemplate();
             ExchangeRatesResource exchangeRates = restTemplate.getForObject(uri, ExchangeRatesResource.class);
             RatesResource ratesResource = exchangeRates.getRates();
-            double rate;
+            BigDecimal rate;
 
             try {
                 Method getter = RatesResource.class.getDeclaredMethod("get" + validateCurrency(depositCurrency), null);
-                rate = (double) getter.invoke(ratesResource, null);
+                rate = (BigDecimal) getter.invoke(ratesResource, null);
             } catch (Exception ex) {
                 throw new InvalidInputException("Can't resolve currency.");
             }
@@ -125,10 +126,10 @@ public class AccountService {
         }
     }
 
-    public void commitTransaction(Account withdrawalAccount, Account depositAccount, double amount, double rate) {
+    public void commitTransaction(Account withdrawalAccount, Account depositAccount, BigDecimal amount, BigDecimal rate) {
 
-        withdrawalAccount.setBalance(withdrawalAccount.getBalance() - amount);
-        depositAccount.setBalance(depositAccount.getBalance() + amount * rate);
+        withdrawalAccount.setBalance(withdrawalAccount.getBalance().subtract(amount));
+        depositAccount.setBalance(depositAccount.getBalance().add(amount.multiply(rate)));
 
         TransferHistory transferHistory = new TransferHistory(withdrawalAccount.getId(), depositAccount.getId(), amount, rate);
 
@@ -138,11 +139,11 @@ public class AccountService {
         transferHistoryRepository.save(transferHistory);
     }
 
-    public double getBalanceInForeign(String currency, Long accountId) {
+    public BigDecimal getBalanceInForeign(String currency, Long accountId) {
 
-        double rate;
+        BigDecimal rate;
         Account account = this.getAccountById(accountId);
-        double balance = account.getBalance();
+        BigDecimal balance = account.getBalance();
         String validatedCurrency = StringUtils.capitalize(currency.toLowerCase());
 
         // Get exchange ratesResource from https://exchangeratesapi.io/
@@ -153,12 +154,12 @@ public class AccountService {
         // Call getter method from RatesResource class for wanted currency
         try {
             Method getter = RatesResource.class.getDeclaredMethod("get" + validatedCurrency, null);
-            rate = (double) getter.invoke(ratesResource, null);
+            rate = (BigDecimal) getter.invoke(ratesResource, null);
         } catch (Exception ex) {
             throw new InvalidInputException("Can't resolve currency.");
         }
 
-        double result = balance * rate;
+        BigDecimal result = balance.multiply(rate);
 
         return result;
     }
@@ -174,11 +175,14 @@ public class AccountService {
     @Scheduled(cron = "0 0 0 1 * ?")
     public void payFees() {
 
+        // TODO: take currency into account
+        BigDecimal fee = BigDecimal.valueOf(100);
+
         List<Account> accounts = this.getAllAccounts();
 
         for(Account account : accounts) {
 
-            account.setBalance(account.getBalance() - 100);
+            account.setBalance(account.getBalance().subtract(fee));
             accountRepository.save(account);
         }
     }

@@ -6,6 +6,7 @@ import com.davidholas.assignment.model.TransferHistory;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -18,7 +19,7 @@ public class Account {
     @Column(nullable = false)
     private int accountNumber;
 
-    private double balance = 5000;
+    private BigDecimal balance = BigDecimal.valueOf(5000);
 
     private Currency currency = Currency.EUR;
 
@@ -46,7 +47,7 @@ public class Account {
         this.customer = customer;
     }
 
-    public Account(int accountNumber, double balance) {
+    public Account(int accountNumber, BigDecimal balance) {
         this.accountNumber = accountNumber;
         this.balance = balance;
     }
@@ -67,11 +68,11 @@ public class Account {
         this.accountNumber = accountNumber;
     }
 
-    public double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 

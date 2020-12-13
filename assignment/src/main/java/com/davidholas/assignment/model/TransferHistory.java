@@ -3,6 +3,7 @@ package com.davidholas.assignment.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,9 +20,9 @@ public class TransferHistory {
     @Column(name = "deposit_account")
     private Long depositAccountId;
 
-    private double amount;
+    private BigDecimal amount;
 
-    private double rate;
+    private BigDecimal rate;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy kk:mm:ss")
     private LocalDateTime time;
@@ -29,7 +30,7 @@ public class TransferHistory {
     public TransferHistory() {
     }
 
-    public TransferHistory(Long withdrawalAccountId, Long depositAccountId, double amount, double rate) {
+    public TransferHistory(Long withdrawalAccountId, Long depositAccountId, BigDecimal amount, BigDecimal rate) {
         this.withdrawalAccountId = withdrawalAccountId;
         this.depositAccountId = depositAccountId;
         this.amount = amount;
@@ -61,19 +62,19 @@ public class TransferHistory {
         this.depositAccountId = depositAccountId;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
-    public double getRate() {
+    public BigDecimal getRate() {
         return rate;
     }
 
-    public void setRate(double rate) {
+    public void setRate(BigDecimal rate) {
         this.rate = rate;
     }
 

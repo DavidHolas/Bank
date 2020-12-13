@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,7 +55,7 @@ class AssignmentApplicationTests {
 	public void newAccountDefaultBalance() {
 
 		Account account = new Account();
-		assertEquals(5000.0, account.getBalance());
+		assertEquals(BigDecimal.valueOf(5000), account.getBalance());
 	}
 
 	@Test
@@ -69,11 +70,11 @@ class AssignmentApplicationTests {
 		Mockito.when(accountRepository.findById(2L)).thenReturn(Optional.ofNullable(withdrawalAccount));
 		Mockito.when(accountRepository.findById(3L)).thenReturn(Optional.ofNullable(depositAccount));
 
-		TransferDetails transferDetails = new TransferDetails(withdrawalAccount.getId(), depositAccount.getId(), 1000.0);
+		TransferDetails transferDetails = new TransferDetails(withdrawalAccount.getId(), depositAccount.getId(), BigDecimal.valueOf(1000.0));
 
 		accountService.transferMoney(transferDetails);
 
-		assertEquals(4000, withdrawalAccount.getBalance());
+		assertEquals(BigDecimal.valueOf(4000.0), withdrawalAccount.getBalance());
 	}
 
 	@Test
@@ -88,11 +89,11 @@ class AssignmentApplicationTests {
 		Mockito.when(accountRepository.findById(2L)).thenReturn(Optional.ofNullable(withdrawalAccount));
 		Mockito.when(accountRepository.findById(3L)).thenReturn(Optional.ofNullable(depositAccount));
 
-		TransferDetails transferDetails = new TransferDetails(withdrawalAccount.getId(), depositAccount.getId(), 1000.0);
+		TransferDetails transferDetails = new TransferDetails(withdrawalAccount.getId(), depositAccount.getId(), BigDecimal.valueOf(1000.0));
 
 		accountService.transferMoney(transferDetails);
 
-		assertEquals(6000, depositAccount.getBalance());
+		assertEquals(BigDecimal.valueOf(6000.0), depositAccount.getBalance());
 	}
 
 	@Test
@@ -108,7 +109,7 @@ class AssignmentApplicationTests {
 					Mockito.when(accountRepository.findById(2L)).thenReturn(Optional.ofNullable(withdrawalAccount));
 					Mockito.when(accountRepository.findById(3L)).thenReturn(Optional.ofNullable(depositAccount));
 
-					TransferDetails transferDetails = new TransferDetails(2L, 3L, 25000.0);
+					TransferDetails transferDetails = new TransferDetails(2L, 3L, BigDecimal.valueOf(25000.0));
 
 					accountService.transferMoney(transferDetails);
 				});

@@ -2,59 +2,61 @@ package com.davidholas.assignment.model.Rates;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.math.BigDecimal;
+
 public class RatesResource {
 
     @JsonProperty("EUR")
-    private double eur;
+    private BigDecimal eur;
 
     @JsonProperty("GBP")
-    private double gbp;
+    private BigDecimal gbp;
 
     @JsonProperty("USD")
-    private double usd;
+    private BigDecimal usd;
 
     @JsonProperty("CHF")
-    private double chf;
+    private BigDecimal chf;
 
     public RatesResource() {
     }
 
-    public RatesResource(double eur, double gbp, double usd, double chf) {
+    public RatesResource(BigDecimal eur, BigDecimal gbp, BigDecimal usd, BigDecimal chf) {
         this.eur = eur;
         this.gbp = gbp;
         this.usd = usd;
         this.chf = chf;
     }
 
-    public double getEur() {
+    public BigDecimal getEur() {
         return eur;
     }
 
-    public void setEur(double eur) {
+    public void setEur(BigDecimal eur) {
         this.eur = eur;
     }
 
-    public double getGbp() {
+    public BigDecimal getGbp() {
         return gbp;
     }
 
-    public void setGbp(double gbp) {
+    public void setGbp(BigDecimal gbp) {
         this.gbp = gbp;
     }
 
-    public double getUsd() {
+    public BigDecimal getUsd() {
         return usd;
     }
 
-    public void setUsd(double usd) {
+    public void setUsd(BigDecimal usd) {
         this.usd = usd;
     }
 
-    public double getChf() {
+    public BigDecimal getChf() {
         return chf;
     }
 
-    public void setChf(double chf) {
+    public void setChf(BigDecimal chf) {
         this.chf = chf;
     }
 }

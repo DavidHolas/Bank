@@ -3,19 +3,21 @@ package com.davidholas.assignment.model.Account;
 import com.davidholas.assignment.model.Currency;
 import com.davidholas.assignment.model.Customer.Customer;
 
+import java.math.BigDecimal;
+
 public class AccountResource {
 
     private Long id;
 
     private int accountNumber;
 
-    private double balance;
+    private BigDecimal balance;
 
     private Currency currency;
 
     private Customer customer;
 
-    public AccountResource(Long id, int accountNumber, double balance, Currency currency, Customer customer) {
+    public AccountResource(Long id, int accountNumber, BigDecimal balance, Currency currency, Customer customer) {
         this.id = id;
         this.accountNumber = accountNumber;
         this.balance = balance;
@@ -39,11 +41,11 @@ public class AccountResource {
         this.accountNumber = accountNumber;
     }
 
-    public double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 
