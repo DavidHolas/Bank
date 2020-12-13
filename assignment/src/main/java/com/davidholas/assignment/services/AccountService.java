@@ -6,8 +6,8 @@ import com.davidholas.assignment.exceptions.ResourceNotFoundException;
 import com.davidholas.assignment.model.Account.Account;
 import com.davidholas.assignment.model.Account.AccountResource;
 import com.davidholas.assignment.model.Customer.Customer;
-import com.davidholas.assignment.model.ExchangeRatesResource;
-import com.davidholas.assignment.model.Rates;
+import com.davidholas.assignment.model.Rates.ExchangeRatesResource;
+import com.davidholas.assignment.model.Rates.RatesResource;
 import com.davidholas.assignment.model.TransferDetails;
 import com.davidholas.assignment.model.TransferHistory;
 import com.davidholas.assignment.repositories.AccountRepository;
@@ -111,12 +111,12 @@ public class AccountService {
             String uri = "https://api.exchangeratesapi.io/latest?base=" + withdrawalCurrency;
             RestTemplate restTemplate = new RestTemplate();
             ExchangeRatesResource exchangeRates = restTemplate.getForObject(uri, ExchangeRatesResource.class);
-            Rates rates = exchangeRates.getRates();
+            RatesResource ratesResource = exchangeRates.getRates();
             double rate;
 
             try {
-                Method getter = Rates.class.getDeclaredMethod("get" + validateCurrency(depositCurrency), null);
-                rate = (double) getter.invoke(rates, null);
+                Method getter = RatesResource.class.getDeclaredMethod("get" + validateCurrency(depositCurrency), null);
+                rate = (double) getter.invoke(ratesResource, null);
             } catch (Exception ex) {
                 throw new InvalidInputException("Can't resolve currency.");
             }
@@ -145,15 +145,15 @@ public class AccountService {
         double balance = account.getBalance();
         String validatedCurrency = StringUtils.capitalize(currency.toLowerCase());
 
-        // Get exchange rates from https://exchangeratesapi.io/
+        // Get exchange ratesResource from https://exchangeratesapi.io/
         RestTemplate restTemplate = new RestTemplate();
         ExchangeRatesResource exchangeRates = restTemplate.getForObject("https://api.exchangeratesapi.io/latest", ExchangeRatesResource.class);
-        Rates rates = exchangeRates.getRates();
+        RatesResource ratesResource = exchangeRates.getRates();
 
-        // Call getter method from Rates class for wanted currency
+        // Call getter method from RatesResource class for wanted currency
         try {
-            Method getter = Rates.class.getDeclaredMethod("get" + validatedCurrency, null);
-            rate = (double) getter.invoke(rates, null);
+            Method getter = RatesResource.class.getDeclaredMethod("get" + validatedCurrency, null);
+            rate = (double) getter.invoke(ratesResource, null);
         } catch (Exception ex) {
             throw new InvalidInputException("Can't resolve currency.");
         }

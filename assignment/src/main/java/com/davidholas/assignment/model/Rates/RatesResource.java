@@ -1,8 +1,8 @@
-package com.davidholas.assignment.model;
+package com.davidholas.assignment.model.Rates;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Rates {
+public class RatesResource {
 
     @JsonProperty("EUR")
     private double eur;
@@ -16,10 +16,10 @@ public class Rates {
     @JsonProperty("CHF")
     private double chf;
 
-    public Rates() {
+    public RatesResource() {
     }
 
-    public Rates(double eur, double gbp, double usd, double chf) {
+    public RatesResource(double eur, double gbp, double usd, double chf) {
         this.eur = eur;
         this.gbp = gbp;
         this.usd = usd;

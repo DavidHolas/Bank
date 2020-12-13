@@ -1,6 +1,8 @@
-package com.davidholas.assignment.model;
+package com.davidholas.assignment.model.Rates;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.davidholas.assignment.model.Rates.RatesResource;
 
 public class ExchangeRatesResource {
 
@@ -11,12 +13,12 @@ public class ExchangeRatesResource {
     private String date;
 
     @JsonProperty("rates")
-    private Rates rates;
+    private RatesResource rates;
 
     public ExchangeRatesResource() {
     }
 
-    public ExchangeRatesResource(String base, String date, Rates rates) {
+    public ExchangeRatesResource(String base, String date, RatesResource rates) {
         this.base = base;
         this.date = date;
         this.rates = rates;
@@ -38,11 +40,11 @@ public class ExchangeRatesResource {
         this.date = date;
     }
 
-    public Rates getRates() {
+    public RatesResource getRates() {
         return rates;
     }
 
-    public void setRates(Rates rates) {
+    public void setRates(RatesResource rates) {
         this.rates = rates;
     }
 }
