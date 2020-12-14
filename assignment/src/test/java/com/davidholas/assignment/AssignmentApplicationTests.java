@@ -116,5 +116,35 @@ class AssignmentApplicationTests {
 	}
 
 
+	@Test
+	@Rollback
+	public void depositMoneyTest() {
 
+		Account account = new Account();
+		account.setId(2L);
+
+		Mockito.when(accountRepository.findById(2L)).thenReturn(Optional.ofNullable(account));
+
+		TransferDetails transferDetails = new TransferDetails(null, 2L, BigDecimal.valueOf(250));
+
+		accountService.depositMoney(transferDetails);
+
+		assertEquals(account.getBalance(), BigDecimal.valueOf(5250));
+	}
+
+	@Test
+	@Rollback
+	public void withdrawMoneyTest() {
+
+		Account account = new Account();
+		account.setId(2L);
+
+		Mockito.when(accountRepository.findById(2L)).thenReturn(Optional.ofNullable(account));
+
+		TransferDetails transferDetails = new TransferDetails(2L, null, BigDecimal.valueOf(250));
+
+		accountService.withdrawMoney(transferDetails);
+
+		assertEquals(account.getBalance(), BigDecimal.valueOf(4750));
+	}
 }

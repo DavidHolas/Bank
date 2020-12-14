@@ -43,6 +43,18 @@ public class AccountController {
         accountService.addAccount(accountResource);
     }
 
+    @PostMapping("/depositMoney")
+    public void depositMoney(@RequestBody TransferDetails transferDetails) {
+
+        accountService.depositMoney(transferDetails);
+    }
+
+    @PostMapping("/withdrawMoney")
+    public void withdrawMoney(@RequestBody TransferDetails transferDetails) {
+
+        accountService.withdrawMoney(transferDetails);
+    }
+
     @GetMapping("/balance/{accountId}")
     public ResponseEntity<BigDecimal> getBalance(@PathVariable Long accountId) {
 

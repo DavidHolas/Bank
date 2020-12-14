@@ -85,6 +85,28 @@ public class AccountService {
         accountRepository.save(account);
     }
 
+    public void depositMoney(TransferDetails transferDetails) {
+
+        Long accountId = transferDetails.getDepositAccountId();
+        BigDecimal amount = transferDetails.getAmount();
+
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ResourceNotFoundException("Account with id: " + accountId + " was not found."));
+
+        account.setBalance(account.getBalance().add(amount));
+        accountRepository.save(account);
+    }
+
+    public void withdrawMoney(TransferDetails transferDetails) {
+
+        Long accountId = transferDetails.getWithdrawalAccountId();
+        BigDecimal amount = transferDetails.getAmount();
+
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ResourceNotFoundException("Account with id: " + accountId + " was not found."));
+
+        account.setBalance(account.getBalance().subtract(amount));
+        accountRepository.save(account);
+    }
+
     public void transferMoney(TransferDetails transferDetails) {
 
         BigDecimal amount = transferDetails.getAmount();
@@ -193,10 +215,9 @@ public class AccountService {
     }
 
     // Need to find proper place for the method and test the correctness of cron expression
-    @Scheduled(cron = "0 * * ? * *")
+    @Scheduled(cron = "0 0 0 1 * ?")
     public void payFees() {
 
-        // TODO: take currency into account
         BigDecimal fee = BigDecimal.valueOf(2);
 
         List<Account> accounts = this.getAllAccounts();
