@@ -5,6 +5,7 @@ import com.davidholas.assignment.exceptions.InvalidInputException;
 import com.davidholas.assignment.exceptions.ResourceNotFoundException;
 import com.davidholas.assignment.model.Account.Account;
 import com.davidholas.assignment.model.Account.AccountResource;
+import com.davidholas.assignment.model.Currency;
 import com.davidholas.assignment.model.Customer.Customer;
 import com.davidholas.assignment.model.Rates.ExchangeRatesResource;
 import com.davidholas.assignment.model.Rates.RatesResource;
@@ -171,16 +172,40 @@ public class AccountService {
         return result;
     }
 
+    public BigDecimal convertCurrency(Currency convertFrom, Currency convertTo, BigDecimal amount) {
+
+        BigDecimal rate;
+
+        RestTemplate restTemplate = new RestTemplate();
+        ExchangeRatesResource exchangeRates = restTemplate.getForObject("https://api.exchangeratesapi.io/latest?base=" + convertFrom.toString(), ExchangeRatesResource.class);
+        RatesResource ratesResource = exchangeRates.getRates();
+
+        try {
+            Method getter = RatesResource.class.getDeclaredMethod("get" + validateCurrency(convertTo.toString()), null);
+            rate = (BigDecimal) getter.invoke(ratesResource, null);
+        } catch (Exception ex) {
+            throw new InvalidInputException("Can't resolve currency.");
+        }
+
+        BigDecimal result = amount.multiply(rate);
+
+        return result;
+    }
+
     // Need to find proper place for the method and test the correctness of cron expression
-    @Scheduled(cron = "0 0 0 1 * ?")
+    @Scheduled(cron = "0 * * ? * *")
     public void payFees() {
 
         // TODO: take currency into account
-        BigDecimal fee = BigDecimal.valueOf(100);
+        BigDecimal fee = BigDecimal.valueOf(2);
 
         List<Account> accounts = this.getAllAccounts();
 
         for(Account account : accounts) {
+
+            if(!account.getCurrency().equals(Currency.EUR)) {
+                fee = convertCurrency(Currency.EUR, account.getCurrency(), fee);
+            }
 
             account.setBalance(account.getBalance().subtract(fee));
             accountRepository.save(account);
