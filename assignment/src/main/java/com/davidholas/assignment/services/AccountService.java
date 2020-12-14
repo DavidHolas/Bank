@@ -49,13 +49,8 @@ public class AccountService {
 
     public Account getAccountById(Long accountId) {
 
-        Optional<Account> accountOpt = accountRepository.findById(accountId);
-
-        if (!accountOpt.isPresent()) {
-            throw new ResourceNotFoundException("Account with id: " + accountId + " was not found.");
-        }
-
-        Account account = accountOpt.get();
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("Account with id: " + accountId + " was not found."));
 
         return account;
     }
@@ -72,19 +67,14 @@ public class AccountService {
         Long customerId = accountResource.getCustomer().getId();
         int accountNumber = accountResource.getAccountNumber();
 
-        Optional<Customer> customerOpt = customerRepository.findById(customerId);
-
-        if (!customerOpt.isPresent()) {
-            throw new ResourceNotFoundException("Customer with id: " + customerId + " was not found.");
-        }
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer with id: " + customerId + " was not found."));
 
         Optional<Account> accountOpt = accountRepository.findAccountByNumber(accountNumber);
 
         if (accountOpt.isPresent()) {
             throw new InvalidInputException("Account with number: " + accountNumber + " already exists.");
         }
-
-        Customer customer = customerOpt.get();
 
         Account account = new Account(accountNumber, accountResource.getCurrency(), customer);
 
@@ -96,7 +86,8 @@ public class AccountService {
         Long accountId = transferDetails.getDepositAccountId();
         BigDecimal amount = transferDetails.getAmount();
 
-        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ResourceNotFoundException("Account with id: " + accountId + " was not found."));
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("Account with id: " + accountId + " was not found."));
 
         account.setBalance(account.getBalance().add(amount));
         accountRepository.save(account);
@@ -107,7 +98,8 @@ public class AccountService {
         Long accountId = transferDetails.getWithdrawalAccountId();
         BigDecimal amount = transferDetails.getAmount();
 
-        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ResourceNotFoundException("Account with id: " + accountId + " was not found."));
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("Account with id: " + accountId + " was not found."));
 
         account.setBalance(account.getBalance().subtract(amount));
         accountRepository.save(account);
@@ -119,11 +111,10 @@ public class AccountService {
         Long withdrawalAccId = transferDetails.getWithdrawalAccountId();
         Long depositAccId = transferDetails.getDepositAccountId();
 
-        Optional<Account> withdrawalAccountOpt = accountRepository.findById(withdrawalAccId);
-        Optional<Account> depositAccountOpt = accountRepository.findById(depositAccId);
-
-        Account withdrawalAccount = withdrawalAccountOpt.orElseThrow(() -> new ResourceNotFoundException("Account with id: " + withdrawalAccId + " was not found."));
-        Account depositAccount = depositAccountOpt.orElseThrow(() -> new ResourceNotFoundException("Account with id: " + depositAccId + " was not found."));
+        Account withdrawalAccount = accountRepository.findById(withdrawalAccId)
+                .orElseThrow(() -> new ResourceNotFoundException("Account with id: " + withdrawalAccId + " was not found."));
+        Account depositAccount = accountRepository.findById(depositAccId)
+                .orElseThrow(() -> new ResourceNotFoundException("Account with id: " + depositAccId + " was not found."));
 
         if ((withdrawalAccount.getBalance().subtract(amount)).compareTo(BigDecimal.ZERO) == -1) {
             throw new BusinessException("There is not enough money on an account with id: " + withdrawalAccId);
