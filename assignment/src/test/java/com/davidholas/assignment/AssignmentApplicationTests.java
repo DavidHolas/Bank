@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -27,6 +28,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class AssignmentApplicationTests {
 
 	AccountService accountService;
+
+	@Mock
+	RestTemplate restTemplate;
 
 	@Mock
 	AccountRepository accountRepository;
@@ -47,7 +51,7 @@ class AssignmentApplicationTests {
 		Mockito.mock(AccountRepository.class);
 		Mockito.mock(CustomerService.class);
 
-		accountService = new AccountService(accountRepository, customerRepository, transferHistoryRepository);
+		accountService = new AccountService(accountRepository, customerRepository, transferHistoryRepository, restTemplate);
 	}
 
 	@Test

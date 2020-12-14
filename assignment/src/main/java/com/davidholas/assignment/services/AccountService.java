@@ -29,16 +29,22 @@ import java.util.Optional;
 @Transactional
 public class AccountService {
 
+    public static final String CANT_RESOLVE_CURRENCY = "Can't resolve currency.";
+    public static final String FX_RATES_API = "https://api.exchangeratesapi.io/latest";
+
+    private RestTemplate restTemplate;
+
     private AccountRepository accountRepository;
 
     private CustomerRepository customerRepository;
 
     private TransferHistoryRepository transferHistoryRepository;
 
-    public AccountService(AccountRepository accountRepository, CustomerRepository customerRepository, TransferHistoryRepository transferHistoryRepository) {
+    public AccountService(AccountRepository accountRepository, CustomerRepository customerRepository, TransferHistoryRepository transferHistoryRepository, RestTemplate restTemplate) {
         this.accountRepository = accountRepository;
         this.customerRepository = customerRepository;
         this.transferHistoryRepository = transferHistoryRepository;
+        this.restTemplate = restTemplate;
     }
 
     public Account getAccountById(Long accountId) {
@@ -132,8 +138,8 @@ public class AccountService {
 
         } else {
 
-            String uri = "https://api.exchangeratesapi.io/latest?base=" + withdrawalCurrency;
-            RestTemplate restTemplate = new RestTemplate();
+            String uri = FX_RATES_API + "?base=" + withdrawalCurrency;
+
             ExchangeRatesResource exchangeRates = restTemplate.getForObject(uri, ExchangeRatesResource.class);
             RatesResource ratesResource = exchangeRates.getRates();
             BigDecimal rate;
@@ -142,7 +148,7 @@ public class AccountService {
                 Method getter = RatesResource.class.getDeclaredMethod("get" + validateCurrency(depositCurrency), null);
                 rate = (BigDecimal) getter.invoke(ratesResource, null);
             } catch (Exception ex) {
-                throw new InvalidInputException("Can't resolve currency.");
+                throw new InvalidInputException(CANT_RESOLVE_CURRENCY);
             }
 
             commitTransaction(withdrawalAccount, depositAccount, amount, rate);
@@ -170,8 +176,7 @@ public class AccountService {
         String validatedCurrency = StringUtils.capitalize(currency.toLowerCase());
 
         // Get exchange ratesResource from https://exchangeratesapi.io/
-        RestTemplate restTemplate = new RestTemplate();
-        ExchangeRatesResource exchangeRates = restTemplate.getForObject("https://api.exchangeratesapi.io/latest", ExchangeRatesResource.class);
+        ExchangeRatesResource exchangeRates = restTemplate.getForObject(FX_RATES_API, ExchangeRatesResource.class);
         RatesResource ratesResource = exchangeRates.getRates();
 
         // Call getter method from RatesResource class for wanted currency
@@ -179,7 +184,7 @@ public class AccountService {
             Method getter = RatesResource.class.getDeclaredMethod("get" + validatedCurrency, null);
             rate = (BigDecimal) getter.invoke(ratesResource, null);
         } catch (Exception ex) {
-            throw new InvalidInputException("Can't resolve currency.");
+            throw new InvalidInputException(CANT_RESOLVE_CURRENCY);
         }
 
         BigDecimal result = balance.multiply(rate);
@@ -198,15 +203,14 @@ public class AccountService {
 
         BigDecimal rate;
 
-        RestTemplate restTemplate = new RestTemplate();
-        ExchangeRatesResource exchangeRates = restTemplate.getForObject("https://api.exchangeratesapi.io/latest?base=" + convertFrom.toString(), ExchangeRatesResource.class);
+        ExchangeRatesResource exchangeRates = restTemplate.getForObject(FX_RATES_API + "?base=" + convertFrom.toString(), ExchangeRatesResource.class);
         RatesResource ratesResource = exchangeRates.getRates();
 
         try {
             Method getter = RatesResource.class.getDeclaredMethod("get" + validateCurrency(convertTo.toString()), null);
             rate = (BigDecimal) getter.invoke(ratesResource, null);
         } catch (Exception ex) {
-            throw new InvalidInputException("Can't resolve currency.");
+            throw new InvalidInputException(CANT_RESOLVE_CURRENCY);
         }
 
         BigDecimal result = amount.multiply(rate);
