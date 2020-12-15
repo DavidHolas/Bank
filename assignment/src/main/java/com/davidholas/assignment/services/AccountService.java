@@ -29,8 +29,14 @@ import java.util.Optional;
 @Transactional
 public class AccountService {
 
-    public static final String CANT_RESOLVE_CURRENCY = "Can't resolve currency.";
-    public static final String FX_RATES_API = "https://api.exchangeratesapi.io/latest";
+    private static final String CANT_RESOLVE_CURRENCY = "Can't resolve currency.";
+    private static final String FX_RATES_API = "https://api.exchangeratesapi.io/latest";
+    public static final String BANK_ACC_NOT_FOUND = "Bank account for fee collecting was not found.";
+    public static final String CRON_ONCE_A_MONTH = "0 0 0 1 * ?";
+    public static final String CRON_EVERY_MINUTE = "0 * * ? * *";
+
+    public static final int BANK_ACCOUNT_NUMBER = 666;
+    public static final BigDecimal ACCOUNT_MANAGEMENT_FEE = BigDecimal.valueOf(2);
 
     private RestTemplate restTemplate;
 
@@ -100,6 +106,10 @@ public class AccountService {
 
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException("Account with id: " + accountId + " was not found."));
+
+        if(account.getBalance().subtract(amount).compareTo(BigDecimal.ZERO) == -1) {
+            throw new BusinessException("There is not enough money on an account with id: " + accountId);
+        }
 
         account.setBalance(account.getBalance().subtract(amount));
         accountRepository.save(account);
@@ -210,21 +220,28 @@ public class AccountService {
     }
 
     // Need to find proper place for the method and test the correctness of cron expression
-    @Scheduled(cron = "0 0 0 1 * ?")
+    @Scheduled(cron = CRON_ONCE_A_MONTH)
     public void payFees() {
 
-        BigDecimal fee = BigDecimal.valueOf(2);
+        BigDecimal fee = ACCOUNT_MANAGEMENT_FEE;
 
+        Account bankAccount = accountRepository.findAccountByNumber(BANK_ACCOUNT_NUMBER)
+                .orElseThrow(() -> new ResourceNotFoundException(BANK_ACC_NOT_FOUND));
         List<Account> accounts = this.getAllAccounts();
 
         for(Account account : accounts) {
+
+            if(account.getAccountNumber() == BANK_ACCOUNT_NUMBER) {
+                continue;
+            }
 
             if(!account.getCurrency().equals(Currency.EUR)) {
                 fee = convertCurrency(Currency.EUR, account.getCurrency(), fee);
             }
 
-            account.setBalance(account.getBalance().subtract(fee));
-            accountRepository.save(account);
+            TransferDetails transferDetails = new TransferDetails(account.getId(), bankAccount.getId(), fee);
+
+            transferMoney(transferDetails);
         }
     }
 }
