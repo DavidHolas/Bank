@@ -8,6 +8,7 @@ import com.davidholas.assignment.repositories.CustomerRepository;
 import com.davidholas.assignment.repositories.TransferHistoryRepository;
 import com.davidholas.assignment.services.AccountService;
 import com.davidholas.assignment.services.CustomerService;
+import com.davidholas.assignment.services.ExchangeRatesService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +42,9 @@ class AssignmentApplicationTests {
 	@Mock
 	TransferHistoryRepository transferHistoryRepository;
 
+	@Mock
+	ExchangeRatesService exchangeRatesService;
+
 	@Test
 	void contextLoads() {
 	}
@@ -51,7 +55,8 @@ class AssignmentApplicationTests {
 		Mockito.mock(AccountRepository.class);
 		Mockito.mock(CustomerService.class);
 
-		accountService = new AccountService(accountRepository, customerRepository, transferHistoryRepository, restTemplate);
+		accountService = new AccountService(accountRepository, customerRepository, transferHistoryRepository,
+				restTemplate, exchangeRatesService);
 	}
 
 	@Test

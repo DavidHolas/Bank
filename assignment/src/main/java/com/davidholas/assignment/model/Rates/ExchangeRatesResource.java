@@ -2,8 +2,6 @@ package com.davidholas.assignment.model.Rates;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import com.davidholas.assignment.model.Rates.RatesResource;
-
 public class ExchangeRatesResource {
 
     @JsonProperty("base")

@@ -9,9 +9,6 @@ public class RatesResource {
     @JsonProperty("EUR")
     private BigDecimal eur;
 
-    @JsonProperty("GBP")
-    private BigDecimal gbp;
-
     @JsonProperty("USD")
     private BigDecimal usd;
 
@@ -21,9 +18,8 @@ public class RatesResource {
     public RatesResource() {
     }
 
-    public RatesResource(BigDecimal eur, BigDecimal gbp, BigDecimal usd, BigDecimal chf) {
+    public RatesResource(BigDecimal eur, BigDecimal usd, BigDecimal chf) {
         this.eur = eur;
-        this.gbp = gbp;
         this.usd = usd;
         this.chf = chf;
     }
@@ -34,14 +30,6 @@ public class RatesResource {
 
     public void setEur(BigDecimal eur) {
         this.eur = eur;
-    }
-
-    public BigDecimal getGbp() {
-        return gbp;
-    }
-
-    public void setGbp(BigDecimal gbp) {
-        this.gbp = gbp;
     }
 
     public BigDecimal getUsd() {

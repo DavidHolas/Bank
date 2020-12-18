@@ -22,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.transaction.Transactional;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +31,6 @@ import java.util.Optional;
 public class AccountService {
 
     private static final String CANT_RESOLVE_CURRENCY = "Can't resolve currency.";
-    private static final String FX_RATES_API = "https://api.exchangeratesapi.io/latest";
     public static final String BANK_ACC_NOT_FOUND = "Bank account for fee collecting was not found.";
     public static final String CRON_ONCE_A_MONTH = "0 0 0 1 * ?";
     public static final String CRON_EVERY_MINUTE = "0 * * ? * *";
@@ -46,11 +46,15 @@ public class AccountService {
 
     private TransferHistoryRepository transferHistoryRepository;
 
-    public AccountService(AccountRepository accountRepository, CustomerRepository customerRepository, TransferHistoryRepository transferHistoryRepository, RestTemplate restTemplate) {
+    private ExchangeRatesService exchangeRatesService;
+
+    public AccountService(AccountRepository accountRepository, CustomerRepository customerRepository,
+                          TransferHistoryRepository transferHistoryRepository, RestTemplate restTemplate, ExchangeRatesService exchangeRatesService) {
         this.accountRepository = accountRepository;
         this.customerRepository = customerRepository;
         this.transferHistoryRepository = transferHistoryRepository;
         this.restTemplate = restTemplate;
+        this.exchangeRatesService = exchangeRatesService;
     }
 
     public Account getAccountById(Long accountId) {
@@ -139,9 +143,9 @@ public class AccountService {
 
         } else {
 
-            String uri = FX_RATES_API + "?base=" + withdrawalCurrency;
+            String date = LocalDate.now().toString();
 
-            ExchangeRatesResource exchangeRates = restTemplate.getForObject(uri, ExchangeRatesResource.class);
+            ExchangeRatesResource exchangeRates = exchangeRatesService.getExchangeRatesForDate(date, withdrawalCurrency);
             RatesResource ratesResource = exchangeRates.getRates();
             BigDecimal rate;
 
@@ -175,9 +179,9 @@ public class AccountService {
         Account account = this.getAccountById(accountId);
         BigDecimal balance = account.getBalance();
         String validatedCurrency = StringUtils.capitalize(currency.toLowerCase());
+        String date = LocalDate.now().toString();
 
-        // Get exchange ratesResource from https://exchangeratesapi.io/
-        ExchangeRatesResource exchangeRates = restTemplate.getForObject(FX_RATES_API, ExchangeRatesResource.class);
+        ExchangeRatesResource exchangeRates = exchangeRatesService.getExchangeRatesForDate(date, account.getCurrency().toString());
         RatesResource ratesResource = exchangeRates.getRates();
 
         // Call getter method from RatesResource class for wanted currency
@@ -203,8 +207,9 @@ public class AccountService {
     public BigDecimal convertCurrency(Currency convertFrom, Currency convertTo, BigDecimal amount) {
 
         BigDecimal rate;
+        String date = LocalDate.now().toString();
 
-        ExchangeRatesResource exchangeRates = restTemplate.getForObject(FX_RATES_API + "?base=" + convertFrom.toString(), ExchangeRatesResource.class);
+        ExchangeRatesResource exchangeRates = exchangeRatesService.getExchangeRatesForDate(date, convertFrom.toString());
         RatesResource ratesResource = exchangeRates.getRates();
 
         try {
