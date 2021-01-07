@@ -13,9 +13,17 @@ spring:
   jpa:
     show-sql: true
     hibernate.ddl-auto: create-drop
+  ldap:
+    embedded:
+      port: 8389
+      ldif: 'classpath:ldap-data.ldif'
+      base-dn: 'dc=springframework,dc=org'
 server:
   port: 8080
 name: devel-YAML
+  spring.ldap.embedded.port=8389
+  spring.ldap.embedded.ldif=classpath:ldap-data.ldif
+  spring.ldap.embedded.base-dn=dc=springframework,dc=org
 
 ---
 
