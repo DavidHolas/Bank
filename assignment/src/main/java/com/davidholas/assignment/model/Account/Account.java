@@ -23,6 +23,7 @@ public class Account {
 
     private BigDecimal balance = BigDecimal.valueOf(5000);
 
+    @Enumerated(EnumType.STRING)
     private Currency currency = Currency.EUR;
 
     private LocalDate created;
