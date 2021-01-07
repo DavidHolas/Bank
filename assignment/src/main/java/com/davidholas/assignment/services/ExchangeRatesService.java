@@ -49,7 +49,7 @@ public class ExchangeRatesService {
             exchangeRates = exchangeRatesRepository.getExchangeRatesByDate(date, base)
                     .orElseThrow(() -> new ResourceNotFoundException("Exchange rate for " + base + " from date " + date + " were not found."));
 
-            ratesResource = new RatesResource(exchangeRates.getEur(), exchangeRates.getUsd(), exchangeRates.getChf());
+            ratesResource = new RatesResource(exchangeRates.getEur(), exchangeRates.getUsd(), exchangeRates.getGbp());
 
             exchangeRatesResource = new ExchangeRatesResource(exchangeRates.getBase(), exchangeRates.getDate(), ratesResource);
 

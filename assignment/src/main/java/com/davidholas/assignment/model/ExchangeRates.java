@@ -19,17 +19,17 @@ public class ExchangeRates {
 
     private BigDecimal usd;
 
-    private BigDecimal chf;
+    private BigDecimal gbp;
 
     private String date;
 
     public ExchangeRates() {}
 
-    public ExchangeRates(String base, BigDecimal eur, BigDecimal usd, BigDecimal chf, String date) {
+    public ExchangeRates(String base, BigDecimal eur, BigDecimal usd, BigDecimal gbp, String date) {
         this.base = base;
         this.eur = eur;
         this.usd = usd;
-        this.chf = chf;
+        this.gbp = gbp;
         this.date = date;
     }
 
@@ -57,12 +57,12 @@ public class ExchangeRates {
         this.usd = usd;
     }
 
-    public BigDecimal getChf() {
-        return chf;
+    public BigDecimal getGbp() {
+        return gbp;
     }
 
-    public void setChf(BigDecimal chf) {
-        this.chf = chf;
+    public void setGbp(BigDecimal gbp) {
+        this.gbp = gbp;
     }
 
     public String getDate() {

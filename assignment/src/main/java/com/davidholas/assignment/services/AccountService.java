@@ -146,6 +146,11 @@ public class AccountService {
             String date = LocalDate.now().toString();
 
             ExchangeRatesResource exchangeRates = exchangeRatesService.getExchangeRatesForDate(date, withdrawalCurrency);
+
+            if(exchangeRates == null) {
+                throw new ResourceNotFoundException("Exchange rates for date " + date + " were not found");
+            }
+
             RatesResource ratesResource = exchangeRates.getRates();
             BigDecimal rate;
 
