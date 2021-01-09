@@ -1,10 +1,12 @@
 package com.davidholas.assignment.config;
 
 import com.davidholas.assignment.model.Account.Account;
+import com.davidholas.assignment.model.Address;
 import com.davidholas.assignment.model.Currency;
 import com.davidholas.assignment.model.Customer.Customer;
 import com.davidholas.assignment.model.Role;
 import com.davidholas.assignment.repositories.AccountRepository;
+import com.davidholas.assignment.repositories.AddressRepository;
 import com.davidholas.assignment.repositories.CustomerRepository;
 import com.davidholas.assignment.repositories.RoleRepository;
 import com.davidholas.assignment.security.PasswordEncoder;
@@ -23,6 +25,8 @@ import org.springframework.web.client.RestTemplate;
 @EnableScheduling
 public class ProjectConfiguration {
 
+    private final String CZECH_REPUBLIC = "Česká Republika";
+
     @Bean(name = "restTemplate")
     public RestTemplate prepareRestTemplate() {
 
@@ -38,6 +42,8 @@ public class ProjectConfiguration {
 
         private RoleRepository roleRepository;
 
+        private AddressRepository addressRepository;
+
         private AccountService accountService;
 
         private ExchangeRatesService exchangeRatesService;
@@ -46,22 +52,28 @@ public class ProjectConfiguration {
 
         public DataLoader(PasswordEncoder passwordEncoder, CustomerRepository customerRepository,
                           AccountRepository accountRepository, AccountService accountService,
-                          ExchangeRatesService exchangeRatesService, RoleRepository roleRepository) {
+                          ExchangeRatesService exchangeRatesService, RoleRepository roleRepository,
+                          AddressRepository addressRepository) {
             this.passwordEncoder = passwordEncoder.bCryptPasswordEncoder();
             this.customerRepository = customerRepository;
             this.accountRepository = accountRepository;
             this.accountService = accountService;
             this.exchangeRatesService = exchangeRatesService;
             this.roleRepository = roleRepository;
+            this.addressRepository = addressRepository;
         }
 
         public void run(ApplicationArguments args) {
 
             exchangeRatesService.saveExchangeRates();
 
-            Customer c1 = customerRepository.save(new Customer("Bank admin"));
-            Customer c2 = customerRepository.save(new Customer("David"));
-            Customer c3 = customerRepository.save(new Customer("Monika"));
+            Address bankAddress = addressRepository.save(new Address(CZECH_REPUBLIC, 56601, "Vysoké Mýto", "Slaninová", 666));
+            Address c2Address = addressRepository.save(new Address(CZECH_REPUBLIC, 56601, "Vysoké Mýto", "Bůčková", 999));
+            Address c3Address = addressRepository.save(new Address(CZECH_REPUBLIC, 53955, "Miřetice", "Dachov", 22));
+
+            Customer c1 = customerRepository.save(new Customer("Bank", "Admin", "bankadmin@bank.cz", bankAddress));
+            Customer c2 = customerRepository.save(new Customer("David", "Holas", "davidholas@bank.cz", c2Address));
+            Customer c3 = customerRepository.save(new Customer("Monika", "Netolická", "monikanetolicka@bank.cz", c3Address));
 
             accountRepository.save(new Account(666, Currency.EUR, c1));
             accountRepository.save(new Account(101, Currency.USD, c2));

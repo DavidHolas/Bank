@@ -1,6 +1,7 @@
 package com.davidholas.assignment.services;
 
 import com.davidholas.assignment.exceptions.ResourceNotFoundException;
+import com.davidholas.assignment.model.Address;
 import com.davidholas.assignment.model.Customer.Customer;
 import com.davidholas.assignment.model.Customer.CustomerResource;
 import com.davidholas.assignment.repositories.CustomerRepository;
@@ -36,9 +37,12 @@ public class CustomerService {
 
     public void addCustomer(CustomerResource customerResource) {
 
-        String name = customerResource.getName();
+        String firstName = customerResource.getFirstName();
+        String lastName = customerResource.getLastName();
+        String email = customerResource.getEmail();
+        Address address = customerResource.getAddress();
 
-        Customer customer = new Customer(name);
+        Customer customer = new Customer(firstName, lastName, email, address);
 
         customerRepository.save(customer);
     }
