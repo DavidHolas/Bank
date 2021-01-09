@@ -5,6 +5,8 @@ import javax.persistence.*;
 @Entity
 public class Role {
 
+    private final String ROLE_PREFIX = "ROLE_";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,7 +17,7 @@ public class Role {
     public Role() {}
 
     public Role(String role) {
-        this.role = role;
+        this.role = ROLE_PREFIX + role;
     }
 
     public Long getId() {
