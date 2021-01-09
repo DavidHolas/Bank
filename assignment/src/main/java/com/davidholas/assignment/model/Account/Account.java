@@ -18,14 +18,17 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private int accountNumber;
 
+    @Column(nullable = false)
     private BigDecimal balance = BigDecimal.valueOf(5000);
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Currency currency = Currency.EUR;
 
+    @Column(nullable = false)
     private LocalDate created;
 
     @ManyToOne

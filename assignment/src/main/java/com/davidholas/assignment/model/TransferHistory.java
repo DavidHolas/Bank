@@ -20,8 +20,10 @@ public class TransferHistory {
     @Column(name = "deposit_account")
     private Long depositAccountId;
 
+    @Column(nullable = false)
     private BigDecimal amount;
 
+    @Column(nullable = false)
     private BigDecimal rate;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy kk:mm:ss")
