@@ -1,6 +1,8 @@
 package com.davidholas.assignment.config;
 
 import com.davidholas.assignment.model.Account.Account;
+import com.davidholas.assignment.model.Account.CheckingAccount;
+import com.davidholas.assignment.model.Account.SavingAccount;
 import com.davidholas.assignment.model.Address;
 import com.davidholas.assignment.model.Currency;
 import com.davidholas.assignment.model.Customer.Customer;
@@ -20,6 +22,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
+import java.math.BigDecimal;
 
 @Configuration
 @EnableScheduling
@@ -75,9 +79,11 @@ public class ProjectConfiguration {
             Customer c2 = customerRepository.save(new Customer("David", "Holas", "davidholas@bank.cz", c2Address));
             Customer c3 = customerRepository.save(new Customer("Monika", "Netolická", "monikanetolicka@bank.cz", c3Address));
 
-            accountRepository.save(new Account(666, Currency.EUR, c1));
-            accountRepository.save(new Account(101, Currency.USD, c2));
-            accountRepository.save(new Account(102, Currency.GBP, c3));
+            accountRepository.save(new CheckingAccount(666, c1, BigDecimal.ONE));
+            accountRepository.save(new CheckingAccount(101, Currency.USD, c2, BigDecimal.ONE));
+            accountRepository.save(new CheckingAccount(102, Currency.GBP, c3, BigDecimal.ONE));
+            accountRepository.save(new SavingAccount(000101, c3, BigDecimal.valueOf(1.01)));
+            accountRepository.save(new SavingAccount(000102, c3, BigDecimal.valueOf(1.01)));
 
             roleRepository.save(new Role("ADMIN"));
             roleRepository.save(new Role("USER"));
